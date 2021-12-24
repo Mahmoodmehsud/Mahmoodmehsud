@@ -1,24 +1,25 @@
-#include <ArduinoWebsockets.h>
+#include<ArduinoWebsockets.h>
 #include <WiFi.h>
-#include "BLEDevice.h"
+#include <BLEDevice.h>
 using namespace websockets;
-WebsocketsClient client;
-const char* ssid = "CHIWifi2.4"; //Enter SSID
-const char* password = "L3tme1n@CHI"; //Enter Password
-static BLEUUID connectserviceUUID("0000cd80-0000-1000-8000-00805f9b34fb");
-static BLEAdvertisedDevice* myDevice;
-static boolean doConnect = false;
 
-static boolean doScan = false;
+static boolean doConnect=false;
 void setup() {
   
                                                                       //INITIALIZE_WIFI//
 
     Serial.begin(115200);
-    // Connect to wifi
-    WiFi.begin(ssid, password);
+    
+const char* ssid = "CHIWifi2.4"; //Enter SSID
+const char* password = "L3tme1n@CHI"; //Enter Password
+static BLEUUID connectserviceUUID("0000cd80-0000-1000-8000-00805f9b34fb");
+static BLEAdvertisedDevice* myDevice;
 
-    // Wait some time to connect to wifi
+static boolean doScan = false;
+     WiFi.begin(ssid, password);
+    
+
+   
     for(int i = 0; i < 10 && WiFi.status() != WL_CONNECTED; i++) {
         Serial.print(".");
         delay(1000);
@@ -31,8 +32,10 @@ void setup() {
     }
 
     Serial.println("Connected to Wifi, Connecting to server.");
-    // try to connect to Websockets server
-    bool connected = client.connect("ws://10.8.0.57:8000");
+
+    
+    WebsocketsClient* client;
+    bool connected = client->connect("ws://10.8.0.57:8000");
     if(connected) {
       
         Serial.println("Connected!");
@@ -85,8 +88,12 @@ void setup() {
 
                                                       //CALL_BACK_WHEN_MESSAGES_ARE_RECIEVED//
 
-    client.onMessage([&](WebsocketsMessage message){
+    client->onMessage([&](WebsocketsMessage message){
         Serial.print("Got Message: ");
         Serial.println(message.data());
     });
+
+
+ 
+
 }

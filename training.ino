@@ -1,31 +1,25 @@
 //----------------------------------------------------------//MERGING BOTH BLE AND WEBSOCKET-CLIENT//--------------------------------------------------------------------//
 //_______________________________________________________________________________________________________________________________________________________________________//
 
-
+#include"loop.h"
 #include"setup.h"
 
 
-/* Specify the Service and Characterisitc UUID of Server */
 //static BLEUUID connectserviceUUID("0000cd80-0000-1000-8000-00805f9b34fb");
 static BLEUUID appserviceUUID("cdeacd80-5235-4c07-8846-93a37ee6b86d");
 static BLEUUID    charUUID("cdeacd81-5235-4c07-8846-93a37ee6b86d");
 
-static boolean connected = false;
-
-static BLERemoteCharacteristic* pRemoteCharacteristic;
-
-/* Specify wifi AND ip addRESS */
-
 //------------------------------------------------------------------//NOTIFYCALLBACK//-----------------------------------------------------------------------------------//
 //_______________________________________________________________________________________________________________________________________________________________________//
 static void notifyCallback(BLERemoteCharacteristic* pBLERemoteCharacteristic,uint8_t* pData, size_t length, bool isNotify)
-{
+{    WebsocketsClient client;
     if(pData[0]==129 && pData[1]>=1){
       Serial.print("SPO2 percentage :");
       Serial.println(pData[1]);
       Serial.print("Your Heartbeat BPM :");
-      Serial.println(pData[2]);         
-            client.send("HELLO DANYAL BHAI");
+      Serial.println(pData[2]);  
+            client.send("hello+++++++++");
+           
       }
 }
 
@@ -48,9 +42,8 @@ class MyClientCallback : public BLEClientCallbacks
 
 //-------------------------------------------------------------//STARTING_BLE_CONNECTION//-------------------------------------------------------------------------------//
 //_______________________________________________________________________________________________________________________________________________________________________//
-
-/* Start connection to the BLE Server */
-bool connectToServer()                                          //GETTING_ADDRESS//
+//connect to server wala
+   bool connectToServer()                                          //GETTING_ADDRESS//
 {                                                               //Creating_Client//
   Serial.print("Forming a connection and creating client ");
   Serial.println(myDevice->getAddress().toString().c_str());
@@ -101,9 +94,10 @@ bool connectToServer()                                          //GETTING_ADDRES
 
   }
 
-    connected = true;
+ 
     return true;
 }
+/* Start connection to the BLE Server */
 
 
 
@@ -123,43 +117,3 @@ bool connectToServer()                                          //GETTING_ADDRES
 
 //------------------------------------------------------------------//VOID_LOOP//-------------------------------------------------------------------------------//
 //_______________________________________________________________________________________________________________________________________________________________________//
-
-void loop() {
-    // let the websockets client check for incoming messages
-    if(client.available()) {
-        client.poll();
-    }
-    /* If the flag "doConnect" is true, then we have scanned for and found the desired
-     BLE Server with which we wish to connect.  Now we connect to it.  Once we are 
-     connected we set the connected flag to be true. */
-  if (doConnect == true)
-  {
-    if (connectToServer())
-    {
-      Serial.println("Connected to the BLE Server.");
-    } 
-    else
-    {
-      Serial.println("Failed to connect");
-    }
-    doConnect = false;
-  }
-
-  /* If we are connected to a peer BLE Server, update the characteristic each time we are reached
-     with the current time since boot */
-  if (connected)
-  {
-    String newValue = "Time since boot: " + String(millis()/2000);
-    Serial.println("Setting new characteristic value to \"" + newValue + "\"");
-    
-    /* Set the characteristic's value to be the array of bytes that is actually a string */
-    pRemoteCharacteristic->writeValue(newValue.c_str(), newValue.length());
-    /* You can see this value updated in the Server's Characteristic */
-  }
-  else if(doScan)
-  {
-    BLEDevice::getScan()->start(0);  // this is just example to start scan after disconnect, most likely there is better way to do it in arduino
-  }
-  
-  delay(2000); /* Delay a second between loops */
-}
