@@ -1,24 +1,20 @@
 //----------------------------------------------------------//MERGING BOTH BLE AND WEBSOCKET-CLIENT//--------------------------------------------------------------------//
 //_______________________________________________________________________________________________________________________________________________________________________//
-
+#include "helper.h"
 #include"loop.h"
 #include"setup.h"
 
 
-//static BLEUUID connectserviceUUID("0000cd80-0000-1000-8000-00805f9b34fb");
-static BLEUUID appserviceUUID("cdeacd80-5235-4c07-8846-93a37ee6b86d");
-static BLEUUID    charUUID("cdeacd81-5235-4c07-8846-93a37ee6b86d");
-
 //------------------------------------------------------------------//NOTIFYCALLBACK//-----------------------------------------------------------------------------------//
 //_______________________________________________________________________________________________________________________________________________________________________//
 static void notifyCallback(BLERemoteCharacteristic* pBLERemoteCharacteristic,uint8_t* pData, size_t length, bool isNotify)
-{    WebsocketsClient client;
+{    
     if(pData[0]==129 && pData[1]>=1){
       Serial.print("SPO2 percentage :");
       Serial.println(pData[1]);
       Serial.print("Your Heartbeat BPM :");
       Serial.println(pData[2]);  
-            client.send("hello+++++++++");
+            client->send("hello+++++++++");
            
       }
 }
@@ -35,7 +31,7 @@ class MyClientCallback : public BLEClientCallbacks
 
   void onDisconnect(BLEClient* pclient)
   {
-    connected = false;
+//    connected = false;
    Serial.println("onDisconnect");
   }
 };
@@ -44,13 +40,14 @@ class MyClientCallback : public BLEClientCallbacks
 //_______________________________________________________________________________________________________________________________________________________________________//
 //connect to server wala
    bool connectToServer()                                          //GETTING_ADDRESS//
-{                                                               //Creating_Client//
+{
+  //Creating_Client//
   Serial.print("Forming a connection and creating client ");
   Serial.println(myDevice->getAddress().toString().c_str());
-    
+    Serial.println("CODE IS GOOD 9");
   BLEClient*  pClient  = BLEDevice::createClient();
   Serial.println(" - Created client");
-
+Serial.println("CODE IS GOOD 10");
   pClient->setClientCallbacks(new MyClientCallback());
 
 /* Connect to the remote BLE Server */
@@ -97,23 +94,3 @@ class MyClientCallback : public BLEClientCallbacks
  
     return true;
 }
-/* Start connection to the BLE Server */
-
-
-
-
-
-//-------------------------------------------------------------//BLE_ADVERTISE_DEVICE_CALLBACKS//------------------------------------------------------------------------//
-//_______________________________________________________________________________________________________________________________________________________________________//
-
-/* Scan for BLE servers and find the first one that advertises the service we are looking for. */
-
-//-------------------------------------------------------------------------//MAIN//--------------------------------------------------------------------------------------//
-//_______________________________________________________________________________________________________________________________________________________________________//
-
-
-
-
-
-//------------------------------------------------------------------//VOID_LOOP//-------------------------------------------------------------------------------//
-//_______________________________________________________________________________________________________________________________________________________________________//

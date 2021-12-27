@@ -1,21 +1,22 @@
-#include"setup.h"
-bool pconnected=false;
-static BLERemoteCharacteristic* pRemoteCharacteristic;
- WebsocketsClient* client;
+
 void loop() {
  
     // let the websockets client check for incoming messages
+   
     if(client->available()) {
         client->poll();
     }
+     Serial.println("CODE IS GOOD 6");
     /* If the flag "doConnect" is true, then we have scanned for and found the desired
      BLE Server with which we wish to connect.  Now we connect to it.  Once we are 
      connected we set the connected flag to be true. */
   bool connectToServer();
   
   
+        Serial.println("CODE IS GOOD 7");
   if (doConnect == true)
   {
+        Serial.println("CODE IS GOOD 8");
     if (connectToServer())
     {
       Serial.println("Connected to the BLE Server.");

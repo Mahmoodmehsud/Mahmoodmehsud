@@ -1,59 +1,31 @@
-#include<ArduinoWebsockets.h>
-#include <WiFi.h>
-#include <BLEDevice.h>
-using namespace websockets;
 
-static boolean doConnect=false;
 void setup() {
-  
                                                                       //INITIALIZE_WIFI//
-
     Serial.begin(115200);
-    
-const char* ssid = "CHIWifi2.4"; //Enter SSID
-const char* password = "L3tme1n@CHI"; //Enter Password
-static BLEUUID connectserviceUUID("0000cd80-0000-1000-8000-00805f9b34fb");
-static BLEAdvertisedDevice* myDevice;
-
-static boolean doScan = false;
      WiFi.begin(ssid, password);
-    
-
-   
     for(int i = 0; i < 10 && WiFi.status() != WL_CONNECTED; i++) {
         Serial.print(".");
         delay(1000);
     }
-
     // Check if connected to wifi
     if(WiFi.status() != WL_CONNECTED) {
-        Serial.println("No Wifi!");
-        return;
+        Serial.println("No Wifi!")//return
+        ;
     }
-
     Serial.println("Connected to Wifi, Connecting to server.");
-
-    
-    WebsocketsClient* client;
-    bool connected = client->connect("ws://10.8.0.57:8000");
+    WebsocketsClient client;
+     bool connected = client.connect("ws://10.8.0.59:8000");
     if(connected) {
       
         Serial.println("Connected!");
     } else {
         Serial.println("Not Connected!");
     }
-
-
-
                                                                 //INITIALIZE_BLE//
 
 
-    Serial.println("Starting Arduino BLE Client application...");
+  Serial.println("Starting Arduino BLE Client application...");
   BLEDevice::init("ESP32-BLE-Client");
-
-  /* Retrieve a Scanner and set the callback we want to use to be informed when we
-     have detected a new device.  Specify that we want active scanning and start the
-     scan to run for 5 seconds. */
   BLEScan* pBLEScan = BLEDevice::getScan();
 
 
@@ -65,15 +37,16 @@ static boolean doScan = false;
   {
     Serial.print("BLE Device found");
     Serial.println(advertisedDevice.toString().c_str());
-
+    Serial.println("CODE IS GOOD 1");
     /* We have found a device, let us now see if it contains the service we are looking for. */
     if (advertisedDevice.haveServiceUUID() && advertisedDevice.isAdvertisingService(connectserviceUUID))
-    {
+    {Serial.println("CODE IS GOOD 2");
       BLEDevice::getScan()->stop();
+      Serial.println("CODE IS GOOD 3");
       myDevice = new BLEAdvertisedDevice(advertisedDevice);
        doConnect = true;
-       doScan = true;
-
+       doScan=true;
+Serial.println("CODE IS GOOD 4");
     }
   }
 };
@@ -87,8 +60,8 @@ static boolean doScan = false;
   pBLEScan->start(10, false);
 
                                                       //CALL_BACK_WHEN_MESSAGES_ARE_RECIEVED//
-
-    client->onMessage([&](WebsocketsMessage message){
+Serial.print("CODE IS GOOD 5");
+    client.onMessage([&](WebsocketsMessage message){
         Serial.print("Got Message: ");
         Serial.println(message.data());
     });
